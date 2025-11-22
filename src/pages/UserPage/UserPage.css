@@ -1,0 +1,10 @@
+
+.user-page-container {
+	margin: 0 5rem;
+	display: flex;
+	flex-direction: column;
+}
+
+.user-info-label {
+	width: 200px;
+}
