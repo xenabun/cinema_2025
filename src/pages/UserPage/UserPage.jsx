@@ -1,87 +1,56 @@
-import { Col, Descriptions, Flex, Row, Typography } from "antd"
-import MovieCard from "../../components/MovieCard/MovieCard"
-import "./UserPage.css"
+import { Descriptions, Flex, Pagination, Typography, Button } from "antd";
+import "./UserPage.css";
+import { useAuth } from "../loginPage/AuthContext";
+import { useEffect, useState } from "react";
+import MovieCard from "../../components/movieCard/MovieCard";
+import { userInfo } from "../../utils/requests";
 
-export default function() {
-	const userInfo = [
-		{
-			'key': 1,
-			'label': <span className="user-info-label">имя</span>,
-			'children': 'Ксения Цыгулева'
-		},
-		{
-			'key': 2,
-			'label': <span className="user-info-label">почта</span>,
-			'children': 'example@mail.ru'
-		},
-		{
-			'key': 3,
-			'label': <span className="user-info-label">роль</span>,
-			'children': 'критик'
-		},
-		{
-			'key': 4,
-			'label': <span className="user-info-label">любимые жанры</span>,
-			'children': 'драма, боевик, фантастика'
-		}
-	]
+const UserPage = () => {
+  const { logout } = useAuth();
+  const [userInfoData, setUserInfo] = useState({});
+  const [movies, setMovies] = useState([]);
 
-	const savedMovies = [
-		{
-			'img': 'https://upload.wikimedia.org/wikipedia/ru/6/61/%D0%94%D1%8E%D0%BD%D0%B0_%E2%80%94_%D0%A7%D0%B0%D1%81%D1%82%D1%8C_%D0%B2%D1%82%D0%BE%D1%80%D0%B0%D1%8F_%28%D0%BF%D0%BE%D1%81%D1%82%D0%B5%D1%80%29.jpg',
-			'title': 'Дюна: Часть вторая',
-			'year': 2024,
-		},
-		{
-			'img': 'https://upload.wikimedia.org/wikipedia/ru/6/61/%D0%94%D1%8E%D0%BD%D0%B0_%E2%80%94_%D0%A7%D0%B0%D1%81%D1%82%D1%8C_%D0%B2%D1%82%D0%BE%D1%80%D0%B0%D1%8F_%28%D0%BF%D0%BE%D1%81%D1%82%D0%B5%D1%80%29.jpg',
-			'title': 'Дюна: Часть вторая',
-			'year': 2024,
-		},
-		{
-			'img': 'https://upload.wikimedia.org/wikipedia/ru/6/61/%D0%94%D1%8E%D0%BD%D0%B0_%E2%80%94_%D0%A7%D0%B0%D1%81%D1%82%D1%8C_%D0%B2%D1%82%D0%BE%D1%80%D0%B0%D1%8F_%28%D0%BF%D0%BE%D1%81%D1%82%D0%B5%D1%80%29.jpg',
-			'title': 'Дюна: Часть вторая',
-			'year': 2024,
-		},
-		{
-			'img': 'https://upload.wikimedia.org/wikipedia/ru/6/61/%D0%94%D1%8E%D0%BD%D0%B0_%E2%80%94_%D0%A7%D0%B0%D1%81%D1%82%D1%8C_%D0%B2%D1%82%D0%BE%D1%80%D0%B0%D1%8F_%28%D0%BF%D0%BE%D1%81%D1%82%D0%B5%D1%80%29.jpg',
-			'title': 'Дюна: Часть вторая',
-			'year': 2024,
-		},
-		{
-			'img': 'https://upload.wikimedia.org/wikipedia/ru/6/61/%D0%94%D1%8E%D0%BD%D0%B0_%E2%80%94_%D0%A7%D0%B0%D1%81%D1%82%D1%8C_%D0%B2%D1%82%D0%BE%D1%80%D0%B0%D1%8F_%28%D0%BF%D0%BE%D1%81%D1%82%D0%B5%D1%80%29.jpg',
-			'title': 'Дюна: Часть вторая',
-			'year': 2024,
-		},
-		{
-			'img': 'https://upload.wikimedia.org/wikipedia/ru/6/61/%D0%94%D1%8E%D0%BD%D0%B0_%E2%80%94_%D0%A7%D0%B0%D1%81%D1%82%D1%8C_%D0%B2%D1%82%D0%BE%D1%80%D0%B0%D1%8F_%28%D0%BF%D0%BE%D1%81%D1%82%D0%B5%D1%80%29.jpg',
-			'title': 'Дюна: Часть вторая',
-			'year': 2024,
-		},
-	]
+  useEffect(() => {
+    userInfo().then((res) => {
+      setUserInfo(res.data.data);
+      setMovies(res.data.data.movies);
+    });
+  }, []);
 
-	return (<>
-		<div className="user-page-container">
-			<Descriptions
-				colon={false}
-				column={1}
-				title={<Typography.Title level={1}>Обо мне</Typography.Title>}
-				items={userInfo}
-			/>
-			<Typography.Title level={1}>Сохраненные фильмы</Typography.Title>
-			<Row
-				gutter={[80, 20]}
-				justify={'center'}
-			>
-				{savedMovies.map(movieData => {
-					return <Col>
-						<MovieCard
-							img={movieData.img}
-							title={movieData.title}
-							year={movieData.year}
-						/>
-					</Col>
-				})}
-			</Row>
-		</div>
-	</>)
-}
+  const descriptionsItems = [
+    { label: "имя", children: userInfoData.name },
+    { label: "почта", children: userInfoData.email },
+    { label: "роль", children: userInfoData.role },
+    {
+      label: "любимые жанры",
+      children: (userInfoData.genres || []).toString().replace(",", ", "),
+    },
+  ];
+  return (
+    <div id="movies-page">
+      <Flex gap={50}></Flex>
+      <div className="content-user-container">
+        <Descriptions
+          style={{ width: "500px" }}
+          column={1}
+          colon={false}
+          bordered
+          title={<Typography.Title>Обо мне</Typography.Title>}
+          items={descriptionsItems}
+        ></Descriptions>
+      </div>
+      <Button danger onClick={() => logout()}>
+        Выйти
+      </Button>
+      <Typography.Title>Сохраненные фильмы</Typography.Title>
+      <div className="movies-list">
+        {movies.map((item) => (
+          <MovieCard item={item} />
+        ))}
+      </div>
+      <Pagination showQuickJumper defaultCurrent={2} total={20} />
+    </div>
+  );
+};
+
+export default UserPage;
